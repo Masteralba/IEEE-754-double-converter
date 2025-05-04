@@ -23,7 +23,7 @@ class DoubleValue{
 
     }
 
-    output(){
+    output(){ // Вывод значений в соответствующие поля
 
         this.bin_output.value = this.bin_value.join("")
         this.decimal_output.value = this.decimal_value.toString()
@@ -33,7 +33,8 @@ class DoubleValue{
 
     }
 
-    bin_input(){
+
+    bin_input(){  // Введено новое бинарное значение
 
         this.bin_value = this.bin_output.value;
 
@@ -43,7 +44,7 @@ class DoubleValue{
         
     }
 
-    decimal_input(){
+    decimal_input(){ // Введено новое десятичное значение
 
         this.decimal_value = this.decimal_output.value;
 
@@ -52,7 +53,7 @@ class DoubleValue{
         this.output()        
     }
 
-    hex_input(){
+    hex_input(){  // Введено новое восьмеричное значение
 
         this.hex_value = this.hex_output.value;
 
@@ -62,6 +63,27 @@ class DoubleValue{
     }
 
 
+    decimal_to_bin(){ // Перевод десятичного представления в двоичное
+        // НУЖНО РЕАЛИЗОВАТЬ
+    }
+
+
+    bin_to_decimal(){  // Перевод двоичного представления в десятичное
+        // НУЖНО РЕАЛИЗОВАТЬ
+    }
+
+    bin_to_hex(){  // Перевод двоичного представления в восьмеричное
+        // НУЖНО РЕАЛИЗОВАТЬ
+    }
+
+    hex_to_bin(){ // Перевод восьмеричного представления в двоичное
+        // НУЖНО РЕАЛИЗОВАТЬ
+    }
+
+    count_error(){ // Вычисление ошибки
+        // НУЖНО РЕАЛИЗОВАТЬ
+    }
+
 
 }
 
@@ -70,19 +92,19 @@ document.addEventListener('DOMContentLoaded', main )
 function main(){
     const double = new DoubleValue();
     
-    // Назначаем обработчики полей ввода
+    // Назначаем обработчик поля ввода бинарного представления
     document.getElementById('Bin_Input_Output').addEventListener('keydown', () => {
-        if (event.key === 'Enter') {
-            double.bin_input();
-        }
+            double.bin_input();  // Вызываем функцию - обработчик
     });
     
+    // Назначаем обработчик поля ввода десятичного представления
     document.getElementById('Decimal_Input_Output').addEventListener('input', () => {
-        double.decimal_input();
+        double.decimal_input();  // Вызываем функцию - обработчик
     });
     
+    // Назначаем обработчик поля ввода восьмеричного представления
     document.getElementById('Hex_Input_Output').addEventListener('input', () => {
-        double.hex_input();
+        double.hex_input();     // Вызываем функцию - обработчик
     });
 }
 
