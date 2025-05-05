@@ -1,7 +1,7 @@
 
 class DoubleValue{
 
-    constructor(){
+    constructor(bits_container){
 
         this.bin_value = new Array(52).fill(0)  // Бинарное представление числа
         this.bin_input_output = document.getElementById('Bin_Input_Output')
@@ -17,6 +17,8 @@ class DoubleValue{
 
         this.hex_value = new Array(8).fill(0)   // Шестнадцатеричное представление числа
         this.hex_input_output = document.getElementById('Hex_Input_Output')
+    
+        this.bits_container = bits_container
 
         this.output()
 
@@ -25,6 +27,11 @@ class DoubleValue{
     output(){ // Вывод значений в соответствующие поля
 
         this.bin_input_output.value = this.bin_value.join("")
+
+        this.bits_container
+
+        for(let i=0; i<52; i++)
+
         this.decimal_input_output.value = this.decimal_value.toString()
         this.stored_output.value = this.stored_value.toString()
         this.error_output.value = this.error_value.toString()
@@ -131,8 +138,14 @@ class DoubleValue{
 
 document.addEventListener('DOMContentLoaded', main )
 
+function updateValue(bitIndex, isChecked) {
+    // Ваш код для обработки изменения бита
+    console.log(`Бит ${bitIndex} изменён на ${isChecked}`);
+}
+
 function main(){
-    const double = new DoubleValue();
+
+    const double = new DoubleValue(container);
     
     // Назначаем обработчик поля ввода бинарного представления
     document.getElementById('Bin_Input_Output').addEventListener('keydown', (event) => { 
@@ -154,5 +167,23 @@ function main(){
             double.input_hex(); // Вызываем функцию - обработчик
         }
     });
+
+    // Назначаем обработчик чекбокса битов
+    container.addEventListener('change', function(event) {
+        if (event.target.classList.contains('bit-checkbox')) {
+            const bitIndex = event.target.id.split('-')[1]; // Получаем номер бита из id
+
+            double.bin_value[bitIndex] = Number(event.target.checked);
+
+            double.bin_to_decimal()
+            double.bin_to_hex()
+            double.count_error()
+            double.output()
+            
+
+        }
+    });
+
+    
 }
 
