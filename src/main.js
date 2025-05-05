@@ -1,26 +1,65 @@
 
 class DoubleValue{
 
-    constructor(bits_container){
+    constructor(
+        bin_html_elem,
+        decimal_html_elem,
+        stored_html_elem,
+        error_html_elem,
+        hex_html_elem,
+        bits_container,
+    ){
 
         this.bin_value = new Array(52).fill(0)  // Бинарное представление числа
-        this.bin_input_output = document.getElementById('Bin_Input_Output')
+        this.bin_input_output = document.getElementById(bin_html_elem)
 
         this.decimal_value = 0  // Введенное пользователем значение
-        this.decimal_input_output = document.getElementById('Decimal_Input_Output')
+        this.decimal_input_output = document.getElementById(decimal_html_elem)
 
         this.stored_value = 0 // Представление числа в памяти
-        this.stored_output = document.getElementById('Stored_Output')
+        this.stored_output = document.getElementById(stored_html_elem)
 
         this.error_value = 0 // Ошибка представления числа
-        this.error_output = document.getElementById('Error_Output')
+        this.error_output = document.getElementById(error_html_elem)
 
         this.hex_value = new Array(8).fill(0)   // Шестнадцатеричное представление числа
-        this.hex_input_output = document.getElementById('Hex_Input_Output')
+        this.hex_input_output = document.getElementById(hex_html_elem)
     
         this.bits_container = bits_container
 
+        this.set_addEventListener()
+
         this.output()
+
+    }
+
+    set_addEventListener(){
+
+        // Назначаем обработчик поля ввода бинарного представления
+        this.bin_input_output.addEventListener('keydown', (event) => { 
+            if (event.key === 'Enter') {
+                this.input_bin(); // Вызываем функцию - обработчик
+            }
+        });
+
+        // Назначаем обработчик поля ввода десятичного представления
+        this.decimal_input_output.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                this.input_decimal(); // Вызываем функцию - обработчик
+            }
+        });
+
+        // Назначаем обработчик поля ввода шестнадцатеричного представления
+        this.hex_input_output.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                this.input_hex(); // Вызываем функцию - обработчик
+            }
+        });
+
+        // Назначаем обработчик чекбокса битов
+        this.bits_container.addEventListener('change', (event) => {
+            this.input_bit(event)
+        });
 
     }
 
@@ -28,9 +67,11 @@ class DoubleValue{
 
         this.bin_input_output.value = this.bin_value.join("")
 
-        this.bits_container
 
         for(let i=0; i<52; i++)
+        {
+            this.bits_container.querySelectorAll('.bit-checkbox')[i].checked = Boolean(parseFloat(this.bin_value[i]))
+        }
 
         this.decimal_input_output.value = this.decimal_value.toString()
         this.stored_output.value = this.stored_value.toString()
@@ -53,7 +94,7 @@ class DoubleValue{
 
         // Все хорошо
 
-        this.bin_value = inputValue  // Обновляем значение
+        this.bin_value = Array.from(inputValue); // Обновляем значение
 
         // Пересчет остальных значений
         this.bin_to_decimal()
@@ -64,6 +105,22 @@ class DoubleValue{
         
     }
 
+    input_bit(event){  // Установлен новый бит
+
+        if (event.target.classList.contains('bit-checkbox')) {
+            const bitIndex = event.target.id.split('-')[1]; // Получаем номер бита из id
+
+            this.bin_value[bitIndex] = Number(event.target.checked);
+
+            this.bin_to_decimal()
+            this.bin_to_hex()
+            this.count_error()
+            this.output()
+
+        }
+    };
+
+    
     input_decimal(){ // Введено новое десятичное значение
 
         const inputValue = this.decimal_input_output.value
@@ -101,7 +158,7 @@ class DoubleValue{
         
         // Все хорошо
 
-        this.hex_value = inputValue  // Обновляем значение
+        this.hex_value = Array.from(inputValue);  // Обновляем значение
 
         // Пересчет остальных значений
 
@@ -138,52 +195,16 @@ class DoubleValue{
 
 document.addEventListener('DOMContentLoaded', main )
 
-function updateValue(bitIndex, isChecked) {
-    // Ваш код для обработки изменения бита
-    console.log(`Бит ${bitIndex} изменён на ${isChecked}`);
-}
 
 function main(){
 
-    const double = new DoubleValue(container);
-    
-    // Назначаем обработчик поля ввода бинарного представления
-    document.getElementById('Bin_Input_Output').addEventListener('keydown', (event) => { 
-            if (event.key === 'Enter') {
-                double.input_bin(); // Вызываем функцию - обработчик
-            }
-    });
-    
-    // Назначаем обработчик поля ввода десятичного представления
-    document.getElementById('Decimal_Input_Output').addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            double.input_decimal(); // Вызываем функцию - обработчик
-        }
-    });
-    
-    // Назначаем обработчик поля ввода шестнадцатеричного представления
-    document.getElementById('Hex_Input_Output').addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            double.input_hex(); // Вызываем функцию - обработчик
-        }
-    });
-
-    // Назначаем обработчик чекбокса битов
-    container.addEventListener('change', function(event) {
-        if (event.target.classList.contains('bit-checkbox')) {
-            const bitIndex = event.target.id.split('-')[1]; // Получаем номер бита из id
-
-            double.bin_value[bitIndex] = Number(event.target.checked);
-
-            double.bin_to_decimal()
-            double.bin_to_hex()
-            double.count_error()
-            double.output()
-            
-
-        }
-    });
-
+    const double = new DoubleValue(
+        'Bin_Input_Output',
+        'Decimal_Input_Output',
+        'Stored_Output',
+        'Error_Output',
+        'Hex_Input_Output',
+        container);
     
 }
 
