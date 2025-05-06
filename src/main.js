@@ -10,7 +10,7 @@ class DoubleValue{
         bits_container,
     ){
 
-        this.bin_value = new Array(64).fill(0)  // Бинарное представление числа
+        this.bin_value = new Array(64).fill('0')  // Бинарное представление числа
         this.bin_input_output = document.getElementById(bin_html_elem)
 
         this.decimal_value = 0  // Введенное пользователем значение
@@ -22,7 +22,7 @@ class DoubleValue{
         this.error_value = 0 // Ошибка представления числа
         this.error_output = document.getElementById(error_html_elem)
 
-        this.hex_value = new Array(8).fill(0)   // Шестнадцатеричное представление числа
+        this.hex_value = new Array(8).fill('0')   // Шестнадцатеричное представление числа
         this.hex_input_output = document.getElementById(hex_html_elem)
     
         this.bits_container = bits_container
@@ -110,7 +110,9 @@ class DoubleValue{
         if (event.target.classList.contains('bit-checkbox')) {
             const bitIndex = event.target.id.split('-')[1]; // Получаем номер бита из id
 
-            this.bin_value[bitIndex] = Number(event.target.checked);
+            //bits_copy = this.bin_value.slice()  // Создаем копию текущего массива бит
+
+            this.bin_value[bitIndex] = `${Number(event.target.checked)}`;
 
             this.bin_to_decimal()
             this.bin_to_hex()
