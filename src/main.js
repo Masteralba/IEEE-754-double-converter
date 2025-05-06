@@ -10,7 +10,7 @@ class DoubleValue{
         bits_container,
     ){
 
-        this.bin_value = new Array(52).fill(0)  // Бинарное представление числа
+        this.bin_value = new Array(64).fill(0)  // Бинарное представление числа
         this.bin_input_output = document.getElementById(bin_html_elem)
 
         this.decimal_value = 0  // Введенное пользователем значение
@@ -68,7 +68,7 @@ class DoubleValue{
         this.bin_input_output.value = this.bin_value.join("")
 
 
-        for(let i=0; i<52; i++)
+        for(let i=0; i<64; i++)
         {
             this.bits_container.querySelectorAll('.bit-checkbox')[i].checked = Boolean(parseFloat(this.bin_value[i]))
         }

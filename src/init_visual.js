@@ -2,8 +2,8 @@
 
 const container = document.getElementById('bit-container');
   
-// Создаем 52 чекбокса
-for (let i = 0; i < 52; i++) {
+// Создаем 64 чекбокса
+for (let i = 0; i < 64; i++) {
 
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
