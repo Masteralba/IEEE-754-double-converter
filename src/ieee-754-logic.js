@@ -65,7 +65,7 @@ window.convert_ieee754_to_decimal = function(ieee754){
         e += ieee754[i]*2**(11-i);
     }
     e -= 1023;
-    return ieee754[0] == 0 ? m*2**e : (-1)*m*2**e;
+    return numberToString(ieee754[0] == 0 ? m*2**e : (-1)*m*2**e);
 }
 
 window.convert_ieee754_to_hex = function(bin_value){
