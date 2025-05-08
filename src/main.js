@@ -1,4 +1,5 @@
 
+
 class DoubleValue{
 
     constructor(
@@ -7,6 +8,7 @@ class DoubleValue{
         stored_html_elem,
         error_html_elem,
         hex_html_elem,
+        exeption_output, 
         bits_container,
     ){
 
@@ -25,11 +27,13 @@ class DoubleValue{
         this.hex_value = new Array(8).fill('0')   // Шестнадцатеричное представление числа
         this.hex_input_output = document.getElementById(hex_html_elem)
     
-        this.bits_container = bits_container
+        this.bits_container = bits_container // Массив бит в виде кнопок
 
-        this.set_addEventListener()
+        this.exeption_output = document.getElementById(exeption_output) // Вывод исключений
 
-        this.output()
+        this.set_addEventListener()  // Установка обработчиков ввода
+
+        this.output() // Первичный вывод
 
     }
 
@@ -78,18 +82,20 @@ class DoubleValue{
         this.error_output.value = this.error_value.toString()
         this.hex_input_output.value = this.hex_value.join("")
 
+        this.exeption_output.value = ""
+
     }
 
 
     input_bin(){  // Введено новое бинарное значение
 
         const inputValue = this.bin_input_output.value
-
-        // парсим
-
-        if (!parse_bin(inputValue))
-        {
-            // Что-то не так
+        
+        try {  // парсим
+            parse_bin(inputValue)
+        } catch (error) {
+            this.exeption_output.value = error.message
+            return // выход
         }
 
         // Все хорошо
@@ -98,10 +104,12 @@ class DoubleValue{
 
         // Пересчет остальных значений
         this.bin_to_decimal()
+        this.bin_to_stored()
         this.bin_to_hex()
         this.count_error()
 
         this.output()
+
         
     }
 
@@ -115,6 +123,7 @@ class DoubleValue{
             this.bin_value[bitIndex] = `${Number(event.target.checked)}`;
 
             this.bin_to_decimal()
+            this.bin_to_stored()
             this.bin_to_hex()
             this.count_error()
             this.output()
@@ -127,38 +136,37 @@ class DoubleValue{
 
         const inputValue = this.decimal_input_output.value
 
-        // Парсим
-
-        if (!parse_decimal(inputValue))
-            {
-                // Что-то не так
-            }
         
-        // Все хорошо
+        try { // парсим
+            parse_decimal(inputValue)
+        } catch (error) {
+            this.exeption_output.value = error.message
+            return // выход
+        }
 
-        this.decimal_value = inputValue  // Обновляем значение
+        this.decimal_value = inputValue.toLowerCase()  // Обновляем значение
 
         // Пересчет остальных значений
 
         this.decimal_to_bin()
+        this.bin_to_stored()
         this.bin_to_hex()
         this.count_error()
 
-        this.output()        
+        this.output()
+
     }
 
     input_hex(){  // Введено новое восьмеричное значение
 
         const inputValue = this.hex_input_output.value
-
-        // Парсим
-
-        if (!parse_hex(inputValue))
-            {
-                // Что-то не так
-            }
         
-        // Все хорошо
+        try {   // парсим
+            parse_hex(inputValue)
+        } catch (error) {
+            this.exeption_output.value = error.message
+            return // выход
+        }
 
         this.hex_value = Array.from(inputValue);  // Обновляем значение
 
@@ -166,30 +174,76 @@ class DoubleValue{
 
         this.hex_to_bin()
         this.bin_to_decimal()
+        this.bin_to_stored()
         this.count_error()
 
         this.output()
+
     }
 
-
-    decimal_to_bin(){ // Перевод десятичного представления в двоичное
-        this.bin_value = convert_decimal_to_ieee754(this.decimal_value)
+    bin_to_stored(){  // Перевод двоичного представлениия в представление в памяти
+        if (this.bin_value.slice(1, 12).every(element => element === '1'))
+            this.stored_value = "not represented"
+            //this.stored_value = ...
     }
 
     bin_to_decimal(){  // Перевод двоичного представления в десятичное
-        this.decimal_value = convert_ieee754_to_decimal(this.bin_value)
+
+        if (this.bin_value.slice(1, 12).every(element => element === '1'))
+        {
+            if (this.bin_value.slice(12, 65).every(element => element == '0'))
+                this.decimal_value = "inf"
+            else
+                this.decimal_value = "NaN"
+            if (this.bin_value[0] == 1)
+                this.decimal_value = "-" + this.decimal_value
+        }
+        else
+            this.decimal_value = convert_ieee754_to_decimal(this.bin_value)
     }
 
     bin_to_hex(){  // Перевод двоичного представления в шестнадцатеричное
         this.hex_value = convert_ieee754_to_hex(this.bin_value)
     }
 
+
+    decimal_to_bin(){ // Перевод десятичного представления в двоичное
+        
+        if ( (this.decimal_value == '+nan') || (this.decimal_value == 'nan') || (this.decimal_value == '-nan') )
+        {
+            this.bin_value.fill('0')
+            if (this.decimal_value == '-nan')
+                this.bin_value.fill('1', 0, 12)
+            else
+                this.bin_value.fill('1', 1, 12)
+        }
+        else
+        {
+            if ( (this.decimal_value == '+inf') || (this.decimal_value == 'inf') || (this.decimal_value == '-inf'))
+            {
+                this.bin_value.fill('0')
+                if (this.decimal_value == '-inf')
+                    this.bin_value.fill('1', 0, 12)
+                else
+                    this.bin_value.fill('1', 1, 12)
+            }
+            else
+                this.bin_value = convert_decimal_to_ieee754(this.decimal_value)
+        }
+            
+    }
+
+    
+
     hex_to_bin(){ // Перевод шестнадцатеричного представления в двоичное
         this.bin_value = convert_hex_to_ieee754(this.hex_value)
     }
 
     count_error(){ // Вычисление ошибки
-        this.error_value = count_difference_ieee754_decimal(this.bin_value, this.decimal_value)
+        if (this.decimal_value == "NaN" || this.decimal_value == "inf" || this.decimal_value == "-NaN" || this.decimal_value == "-inf")
+            this.error_value = "unknown"
+        else
+            this.error_value = count_difference_ieee754_decimal(this.bin_value, this.decimal_value)
     }
 
 
@@ -206,6 +260,7 @@ function main(){
         'Stored_Output',
         'Error_Output',
         'Hex_Input_Output',
+        'Exeption_Output',
         container);
     
 }
