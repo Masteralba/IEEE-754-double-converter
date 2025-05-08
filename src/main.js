@@ -13,13 +13,13 @@ class DoubleValue{
         this.bin_value = new Array(64).fill('0')  // Бинарное представление числа
         this.bin_input_output = document.getElementById(bin_html_elem)
 
-        this.decimal_value = 0  // Введенное пользователем значение
+        this.decimal_value = '0'  // Введенное пользователем значение
         this.decimal_input_output = document.getElementById(decimal_html_elem)
 
-        this.stored_value = 0 // Представление числа в памяти
+        this.stored_value = '0' // Представление числа в памяти
         this.stored_output = document.getElementById(stored_html_elem)
 
-        this.error_value = 0 // Ошибка представления числа
+        this.error_value = '0' // Ошибка представления числа
         this.error_output = document.getElementById(error_html_elem)
 
         this.hex_value = new Array(8).fill('0')   // Шестнадцатеричное представление числа
@@ -97,7 +97,8 @@ class DoubleValue{
         this.bin_value = Array.from(inputValue); // Обновляем значение
 
         // Пересчет остальных значений
-        this.bin_to_decimal()
+        //this.bin_to_decimal
+        this.bin_to_stored()
         this.bin_to_hex()
         this.count_error()
 
@@ -114,7 +115,8 @@ class DoubleValue{
 
             this.bin_value[bitIndex] = `${Number(event.target.checked)}`;
 
-            this.bin_to_decimal()
+            //this.bin_to_decimal
+            this.bin_to_stored()
             this.bin_to_hex()
             this.count_error()
             this.output()
@@ -141,6 +143,7 @@ class DoubleValue{
         // Пересчет остальных значений
 
         this.decimal_to_bin()
+        this.bin_to_stored()
         this.bin_to_hex()
         this.count_error()
 
@@ -164,8 +167,9 @@ class DoubleValue{
 
         // Пересчет остальных значений
 
+        // this.decimal_to_bin ???
         this.hex_to_bin()
-        this.bin_to_decimal()
+        this.bin_to_stored()
         this.count_error()
 
         this.output()
@@ -176,8 +180,8 @@ class DoubleValue{
         this.bin_value = convert_decimal_to_ieee754(this.decimal_value)
     }
 
-    bin_to_decimal(){  // Перевод двоичного представления в десятичное
-        this.decimal_value = convert_ieee754_to_decimal(this.bin_value)
+    bin_to_stored(){  // Перевод двоичного представления в десятичное
+        this.stored_value = convert_ieee754_to_decimal(this.bin_value.join(""))
     }
 
     bin_to_hex(){  // Перевод двоичного представления в шестнадцатеричное
@@ -189,7 +193,7 @@ class DoubleValue{
     }
 
     count_error(){ // Вычисление ошибки
-        this.error_value = count_difference_ieee754_decimal(this.bin_value, this.decimal_value)
+        this.error_value = count_difference_ieee754_decimal(this.decimal_value, this.stored_value)
     }
 
 
@@ -199,6 +203,15 @@ document.addEventListener('DOMContentLoaded', main )
 
 
 function main(){
+
+    //bin = convert_decimal_to_ieee754('0.3')
+//
+    //alert(bin.join(""))
+//
+    //alert(convert_ieee754_to_decimal(bin))
+    //alert(test(bin.join("")))
+    //alert(test('0011111111010011001100110011001100110011001100110011001100110011'))
+
 
     const double = new DoubleValue(
         'Bin_Input_Output',

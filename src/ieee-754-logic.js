@@ -55,18 +55,53 @@ window.convert_decimal_to_ieee754 = function(decimal_value){
     return bits;
 }
 
-window.convert_ieee754_to_decimal = function(ieee754){
-    let m = 1;
-    for (let i = 0; i < 52; i++){
-        m += ieee754[12+i]*2**(-i-1);
+//window.convert_ieee754_to_decimal = function(ieee754){
+//    let m = 1;
+//    for (let i = 0; i < 52; i++){
+//        m += ieee754[12+i]*2**(-i-1);
+//    }
+//    let e = 0;
+//    for (let i = 11; i > 0; i--) {
+//        e += ieee754[i]*2**(11-i);
+//    }
+//    e -= 1023;
+//    return numberToString(ieee754[0] == 0 ? m*2**e : (-1)*m*2**e);
+//}
+
+window.convert_ieee754_to_decimal = function(bitsStr) {
+    if (bitsStr.length !== 64) {
+        throw new Error("Должно быть ровно 64 бита");
     }
-    let e = 0;
-    for (let i = 11; i > 0; i--) {
-        e += ieee754[i]*2**(11-i);
+
+    // Парсинг компонентов
+    const sign = bitsStr[0] === '1' ? -1 : 1;
+    const exponent = parseInt(bitsStr.slice(1, 12), 2) - 1023;
+    const mantissa = parseInt(bitsStr.slice(12), 2);
+
+    // Обработка специальных случаев
+    if (exponent === 1024) {
+        return mantissa === 0 ? (sign === 1 ? "Infinity" : "-Infinity") : "NaN";
     }
-    e -= 1023;
-    return numberToString(ieee754[0] == 0 ? m*2**e : (-1)*m*2**e);
+
+    // Вычисление мантиссы с учетом неявного бита
+    const significand = exponent === -1023 
+        ? mantissa / Math.pow(2, 52)  // Денормализованные числа
+        : 1 + mantissa / Math.pow(2, 52);  // Нормализованные числа
+
+    // Вычисление итогового значения
+    const value = sign * significand * Math.pow(2, exponent);
+
+    // Форматирование с 17 знаками после запятой
+    const formatted = value.toFixed(50);
+    
+    // Удаление незначащих нулей
+    return formatted.replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1');
 }
+
+
+
+
+
 
 window.convert_ieee754_to_hex = function(bin_value){
     let bits = new Array(16).fill(0);
@@ -93,9 +128,9 @@ window.convert_hex_to_ieee754 = function(hex_value){
     return bits;
 }
 
-window.count_difference_ieee754_decimal = function(bin_value, decimal_value){
-    let num = numberToString(convert_ieee754_to_decimal(bin_value))
-    return str_sub(num, decimal_value);
+window.count_difference_ieee754_decimal = function(decimal_value, stored_value){
+    //let num = numberToString(convert_ieee754_to_decimal(bin_value))
+    return str_sub(decimal_value, stored_value);
 }
 
 function str_sub_core(a, b) {
@@ -237,13 +272,3 @@ function numberToString(num) {
 
     return sign + mantissa;
 }
-
-
-let numStr = "0";
-let num = parseFloat(numStr);
-console.log(num)
-console.log(convert_decimal_to_ieee754(num).join(""))
-console.log(convert_ieee754_to_decimal(convert_decimal_to_ieee754(num)))
-console.log(convert_ieee754_to_hex(convert_decimal_to_ieee754(num)))
-console.log(convert_hex_to_ieee754(convert_ieee754_to_hex(convert_decimal_to_ieee754(num))).join(""))
-console.log(count_difference_ieee754_decimal(convert_decimal_to_ieee754(num), numStr))
