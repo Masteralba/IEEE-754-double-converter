@@ -15,13 +15,13 @@ class DoubleValue{
         this.bin_value = new Array(64).fill('0')  // Бинарное представление числа
         this.bin_input_output = document.getElementById(bin_html_elem)
 
-        this.decimal_value = 0  // Введенное пользователем значение
+        this.decimal_value = '0'  // Введенное пользователем значение
         this.decimal_input_output = document.getElementById(decimal_html_elem)
 
-        this.stored_value = 0 // Представление числа в памяти
+        this.stored_value = '0' // Представление числа в памяти
         this.stored_output = document.getElementById(stored_html_elem)
 
-        this.error_value = 0 // Ошибка представления числа
+        this.error_value = '0' // Ошибка представления числа
         this.error_output = document.getElementById(error_html_elem)
 
         this.hex_value = new Array(8).fill('0')   // Шестнадцатеричное представление числа
