@@ -105,6 +105,17 @@ window.convert_ieee754_to_hex = function(bin_value){
             bits[i] += bin_value[4*i+j] * 2**(3-j)
         }
     }
+
+    for (let i =0; i< 16; i++)
+    {
+        if (bits[i] == 10) bits[i] = 'a'
+        if (bits[i] == 11) bits[i] = 'b' 
+        if (bits[i] == 12) bits[i] = 'c' 
+        if (bits[i] == 13) bits[i] = 'd' 
+        if (bits[i] == 14) bits[i] = 'e' 
+        if (bits[i] == 10) bits[i] = 'f' 
+
+    }
     return bits;
 }
 

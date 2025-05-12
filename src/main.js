@@ -24,7 +24,7 @@ class DoubleValue{
         this.error_value = '0' // Ошибка представления числа
         this.error_output = document.getElementById(error_html_elem)
 
-        this.hex_value = new Array(8).fill('0')   // Шестнадцатеричное представление числа
+        this.hex_value = new Array(16).fill('0')   // Шестнадцатеричное представление числа
         this.hex_input_output = document.getElementById(hex_html_elem)
     
         this.bits_container = bits_container // Массив бит в виде кнопок
@@ -80,7 +80,7 @@ class DoubleValue{
         this.decimal_input_output.value = this.decimal_value.toString()
         this.stored_output.value = this.stored_value.toString()
         this.error_output.value = this.error_value.toString()
-        this.hex_input_output.value =  parseInt(this.hex_value.join("")).toString(16)
+        this.hex_input_output.value =  this.hex_value.join("")
 
         this.exeption_output.value = ""
 
