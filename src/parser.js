@@ -46,7 +46,7 @@ window.parse_hex = function(input){
     // На вход подается строка. Проверить, что состоит только из 0..f
     // Проверить, что длинна ровно 8 
 
-    if (input.length != 8){
+    if (input.length != 16){
         throw new Error("Invalid lenght");
     }
 
