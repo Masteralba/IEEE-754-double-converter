@@ -80,7 +80,7 @@ class DoubleValue{
         this.decimal_input_output.value = this.decimal_value.toString()
         this.stored_output.value = this.stored_value.toString()
         this.error_output.value = this.error_value.toString()
-        this.hex_input_output.value = this.hex_value.join("")
+        this.hex_input_output.value =  parseInt(this.hex_value.join("")).toString(16)
 
         this.exeption_output.value = ""
 
@@ -184,7 +184,7 @@ class DoubleValue{
     bin_to_stored(){  // Перевод двоичного представлениия в представление в памяти
         if (this.bin_value.slice(1, 12).every(element => element === '1'))
             this.stored_value = "not represented"
-            //this.stored_value = ...
+            this.stored_value = convert_ieee754_to_stored(this.bin_value.join(""))
     }
 
     bin_to_decimal(){  // Перевод двоичного представления в десятичное
@@ -243,7 +243,7 @@ class DoubleValue{
         if (this.decimal_value == "NaN" || this.decimal_value == "inf" || this.decimal_value == "-NaN" || this.decimal_value == "-inf")
             this.error_value = "unknown"
         else
-            this.error_value = count_difference_ieee754_decimal(this.bin_value, this.decimal_value)
+            this.error_value = count_difference_stored_decimal(this.stored_value, this.decimal_value)
     }
 
 

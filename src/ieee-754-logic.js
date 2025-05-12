@@ -55,7 +55,20 @@ window.convert_decimal_to_ieee754 = function(decimal_value){
     return bits;
 }
 
-window.convert_ieee754_to_decimal = function(bitsStr) {
+window.convert_ieee754_to_decimal = function(ieee754){
+    let m = 1;
+    for (let i = 0; i < 52; i++){
+        m += ieee754[12+i]*2**(-i-1);
+    }
+    let e = 0;
+    for (let i = 11; i > 0; i--) {
+        e += ieee754[i]*2**(11-i);
+    }
+    e -= 1023;
+    return numberToString(ieee754[0] == 0 ? m*2**e : (-1)*m*2**e);
+}
+
+window.convert_ieee754_to_stored = function(bitsStr) {
     if (bitsStr.length !== 64) {
         throw new Error("Должно быть ровно 64 бита");
     }
@@ -110,9 +123,9 @@ window.convert_hex_to_ieee754 = function(hex_value){
     return bits;
 }
 
-window.count_difference_ieee754_decimal = function(bin_value, decimal_value){
-    let num = numberToString(convert_ieee754_to_decimal(bin_value))
-    return str_sub(num, decimal_value);
+window.count_difference_stored_decimal = function(stored_value, decimal_value){
+    //let num = numberToString(convert_ieee754_to_decimal(bin_value))
+    return str_sub(decimal_value, stored_value);
 }
 
 function str_sub_core(a, b) {
@@ -254,13 +267,3 @@ function numberToString(num) {
 
     return sign + mantissa;
 }
-
-
-let numStr = "0";
-let num = parseFloat(numStr);
-console.log(num)
-console.log(convert_decimal_to_ieee754(num).join(""))
-console.log(convert_ieee754_to_decimal(convert_decimal_to_ieee754(num)))
-console.log(convert_ieee754_to_hex(convert_decimal_to_ieee754(num)))
-console.log(convert_hex_to_ieee754(convert_ieee754_to_hex(convert_decimal_to_ieee754(num))).join(""))
-console.log(count_difference_ieee754_decimal(convert_decimal_to_ieee754(num), numStr))
