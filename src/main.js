@@ -80,7 +80,20 @@ class DoubleValue{
         this.decimal_input_output.value = this.decimal_value.toString()
         this.stored_output.value = this.stored_value.toString()
         this.error_output.value = this.error_value.toString()
-        this.hex_input_output.value =  this.hex_value.join("")
+
+        let hex_string = this.hex_value.slice(0, 16)
+
+        for (let i =0; i< 16; i++)
+            {
+                if (hex_string[i] == 10) hex_string[i] = 'a'
+                if (hex_string[i] == 11) hex_string[i] = 'b' 
+                if (hex_string[i] == 12) hex_string[i] = 'c' 
+                if (hex_string[i] == 13) hex_string[i] = 'd' 
+                if (hex_string[i] == 14) hex_string[i] = 'e' 
+                if (hex_string[i] == 15) hex_string[i] = 'f' 
+        
+            }
+        this.hex_input_output.value =  hex_string.join("")
 
         this.exeption_output.value = ""
 
@@ -168,7 +181,18 @@ class DoubleValue{
             return // выход
         }
 
-        this.hex_value = Array.from(inputValue);  // Обновляем значение
+        this.hex_value = Array.from(inputValue.toLowerCase());  // Обновляем значение
+
+        for (let i=0; i < 16; i++)
+        {
+            if (this.hex_value[i] == 'a') this.hex_value[i] = 10
+            if (this.hex_value[i] == 'b') this.hex_value[i] = 11
+            if (this.hex_value[i] == 'c') this.hex_value[i] = 12
+            if (this.hex_value[i] == 'd') this.hex_value[i] = 13
+            if (this.hex_value[i] == 'e') this.hex_value[i] = 14
+            if (this.hex_value[i] == 'f') this.hex_value[i] = 15
+            
+        }
 
         // Пересчет остальных значений
 
