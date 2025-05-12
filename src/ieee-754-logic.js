@@ -56,45 +56,45 @@ window.convert_decimal_to_ieee754 = function(decimal_value){
 }
 
 window.convert_ieee754_to_decimal = function(ieee754){
-    let m = 1;
-    for (let i = 0; i < 52; i++){
-        m += ieee754[12+i]*2**(-i-1);
-    }
     let e = 0;
+    let m = 1;
     for (let i = 11; i > 0; i--) {
         e += ieee754[i]*2**(11-i);
     }
+    if (e === -1023) {
+        m = 0;
+    }
+    
+    for (let i = 0; i < 52; i++){
+        m += ieee754[12+i]*2**(-i-1);
+    }
+    
     e -= 1023;
     return numberToString(ieee754[0] == 0 ? m*2**e : (-1)*m*2**e);
 }
 
 window.convert_ieee754_to_stored = function(bitsStr) {
-    if (bitsStr.length !== 64) {
-        throw new Error("Должно быть ровно 64 бита");
-    }
 
-    // Парсинг компонентов
+
     const sign = bitsStr[0] === '1' ? -1 : 1;
     const exponent = parseInt(bitsStr.slice(1, 12), 2) - 1023;
     const mantissa = parseInt(bitsStr.slice(12), 2);
 
-    // Обработка специальных случаев
+
     if (exponent === 1024) {
         return mantissa === 0 ? (sign === 1 ? "Infinity" : "-Infinity") : "NaN";
     }
 
-    // Вычисление мантиссы с учетом неявного бита
-    const significand = exponent === -1023 
-        ? mantissa / Math.pow(2, 52)  // Денормализованные числа
-        : 1 + mantissa / Math.pow(2, 52);  // Нормализованные числа
 
-    // Вычисление итогового значения
+    const significand = exponent === -1023 
+        ? mantissa / Math.pow(2, 52)  
+        : 1 + mantissa / Math.pow(2, 52);  
+
+
     const value = sign * significand * Math.pow(2, exponent);
 
-    // Форматирование с 17 знаками после запятой
-    const formatted = value.toFixed(50);
+    const formatted = value.toFixed(100);
     
-    // Удаление незначащих нулей
     return formatted.replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1');
 }
 
