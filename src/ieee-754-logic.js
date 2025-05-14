@@ -15,21 +15,27 @@ window.convert_decimal_to_ieee754 = function(decimal_value) {
 
 
 window.convert_ieee754_to_decimal = function(ieee754){
-    let e = 0;
-    let m = 1;
-    for (let i = 11; i > 0; i--) {
-        e += ieee754[i]*2**(11-i);
+	const bitsStr = ieee754.join("");
+    const sign = bitsStr[0] === '1' ? -1 : 1;
+    const exponent = parseInt(bitsStr.slice(1, 12), 2) - 1023;
+    const mantissa = parseInt(bitsStr.slice(12), 2);
+
+
+    if (exponent === 1024) {
+        return mantissa === 0 ? (sign === 1 ? "Infinity" : "-Infinity") : "NaN";
     }
-    if (e === -1023) {
-        m = 0;
-    }
-    
-    for (let i = 0; i < 52; i++){
-        m += ieee754[12+i]*2**(-i-1);
-    }
-    
-    e -= 1023;
-    return numberToString(ieee754[0] == 0 ? m*2**e : (-1)*m*2**e);
+
+
+    const significand = exponent === -1023 
+        ? mantissa / Math.pow(2, 52)  
+        : 1 + mantissa / Math.pow(2, 52);  
+
+
+    const value = sign * significand * Math.pow(2, exponent);
+
+    const formatted = value.toFixed(100);
+    return String(value);
+    //return formatted.replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1');
 }
 
 window.convert_ieee754_to_stored = function(bitsStr) {
@@ -54,7 +60,8 @@ window.convert_ieee754_to_stored = function(bitsStr) {
 
     const formatted = value.toFixed(100);
     
-    return formatted.replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1');
+    return String(value);
+    //return formatted.replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1');
 }
 
 window.convert_ieee754_to_hex = function(bin_value){
@@ -184,6 +191,9 @@ function is_greater(a, b){
     for(let i = 0; i < a.length; i++) {
         if (a[i] > b[i]) {
             return true;
+        }
+		if (b[i] > a[i]) {
+            return false;
         }
     }
     return false;
