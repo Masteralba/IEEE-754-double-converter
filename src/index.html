@@ -7,21 +7,99 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
         <h1>Конвертер в IEEE-754</h1>
     </div>
+    <div style="background-color: lightgrey;">
 
-  
-    <div class="bit-container" id="bit-container"></div>
-    <script src="init_visual.js"></script>
+    <table id="numbertable" style="border-collapse: collapse;">
+        <tr>
+            <td style="text-align: left;   padding: 0em 1em;">
+            </td>
+            <td style="text-align: center; padding: 0.5em 1em; font-weight: bold; background-color: #d2d2e7;">
+                Sign
+            </td>
+            <td style="text-align: center; padding: 0.5em 1em; font-weight: bold; background-color: #c0ddc2;">
+                Exponent
+            </td>
+            <td style="text-align: center; padding: 0.5em 1em; font-weight: bold; background-color: #ddd0c4;">
+                Mantissa
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: left;   padding: 0em 1em; font-weight: bold;">
+                Value:
+            </td>
+            <td style="text-align: center; padding: 0em 1em; background-color: #d2d2e7;">
+                <span id="sign_value">0</span>
+            </td>
+            <td style="text-align: center; padding: 0em 1em; background-color: #c0ddc2;">
+                2<span id="exponent_value" style="vertical-align: super;">0</span>
+            </td>
+            <td style="text-align: center; padding: 0em 1em; background-color: #ddd0c4;">
+                <span id="mantissa_value">0</span>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: left;   padding: 0em 1em; font-weight: bold;">
+                Encoded as:
+            </td>
+            <td style="text-align: center; padding: 0em 1em; background-color: #d2d2e7;">
+                <p><output type="text" id="actual_sign"></p>
+            </td>
+            <td style="text-align: center; padding: 0em 1em; background-color: #c0ddc2;">
+                <p><output type="text" id="actual_exponent"></p>
+            </td>
+            <td style="text-align: center; padding: 0em 1em; background-color: #ddd0c4;">
+                <p><output type="text" id="actual_mantissa"></p>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: left;   padding: 0em 1em; margin-right: 0.5em; font-weight: bold;">
+                Binary:
+            </td>
+            <td style="text-align: center; padding: 0em 1em; margin-right: 0.5em; background-color: #d2d2e7;" id="sign-bit" > </td>
+            <td style="text-align: center; padding: 2em 3em; margin-right: 5.5em; background-color: #c0ddc2;" id="exponent-bits" ></td>
+            <td style="text-align: center; padding: 2em 3em; margin-right: 5.5em; background-color: #ddd0c4;" id="mantissa-bits" ></td>
+            <script src="init_visual.js"></script>
+            <div>
+        </tr>
+        </table>
+        <table>
+        <tr>
+            <td>
+            <p>Бинарное представление:<input type="text" id="Bin_Input_Output" size="64"></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+            <p>Значение в десятичной системе:<input type="text" id="Decimal_Input_Output" size="64"></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+            <p>Значение в памяти:<input id="Stored_Output" readonly size="64"></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>Ошибка представления:<input id="Error_Output" readonly size="64"></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>Шестнадцатеричное представление:<input type="text" id="Hex_Input_Output" size="64"></p>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center">
+                <p><output type="text" id="Exeption_Output"></p>
+            </td>
+        </tr>
+    </table>      
 
 
-    <p>Бинарное представление:<input type="text" id="Bin_Input_Output" size="64"></p>
-    <p>Значение в десятичной системе:<input type="text" id="Decimal_Input_Output"></p>
-    <p>Значение в памяти:<input id="Stored_Output" readonly></p>
-    <p>Ошибка представления:<input id="Error_Output" readonly></p>
-    <p>Шестнадцатеричное представление:<input type="text" id="Hex_Input_Output"></p>
-    <p><output type="text" id="Exeption_Output"></p>
+    </div>
+    
 
     <script src="parser.js"></script>
     <script src="ieee-754-logic.js"></script>

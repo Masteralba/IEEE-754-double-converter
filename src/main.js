@@ -10,6 +10,12 @@ class DoubleValue{
         hex_html_elem,
         exeption_output, 
         bits_container,
+        actual_sign,
+        actual_exponent,
+        actual_mantissa,
+        sign_value,
+        exponent_value,
+        mantissa_value
     ){
 
         this.bin_value = new Array(64).fill('0')  // Бинарное представление числа
@@ -32,6 +38,26 @@ class DoubleValue{
         this.exeption_output = document.getElementById(exeption_output) // Вывод исключений
 
         this.set_addEventListener()  // Установка обработчиков ввода
+
+        this.sign_value = document.getElementById(sign_value)
+        this.sign_value.textContent = '+1'
+
+        this.exponent_value = document.getElementById(exponent_value)
+        this.exponent_value.textContent = '-1023'
+        
+        this.mantissa_value = document.getElementById(mantissa_value)
+        this.mantissa_value.value = '0'
+
+        this.actual_sign = document.getElementById(actual_sign)
+        this.actual_sign.value = '0'
+
+        this.actual_exponent = document.getElementById(actual_exponent)
+        this.actual_exponent.value = '0'
+
+        this.actual_mantissa = document.getElementById(actual_mantissa)
+        this.actual_mantissa.value = '0'
+
+        
 
         this.output() // Первичный вывод
 
@@ -97,6 +123,43 @@ class DoubleValue{
 
         this.exeption_output.value = ""
 
+        this.count_visual()
+
+    }
+
+    count_visual(){
+
+        this.sign_value.textContent = Boolean(parseFloat(this.bin_value[0])) ? "-1" : "+1"
+        this.actual_sign.value = this.bin_value[0]
+
+        let power_counter = 0
+
+        for(let i=11; i >0; i--)
+        {
+            if (this.bin_value[i] != '0')  power_counter += Math.pow(2, 11-i)
+        }
+
+        this.exponent_value.textContent = (power_counter == 2047) ? "?" : `${power_counter-1023}`
+        this.actual_exponent.value = `${power_counter}`
+
+        let matissa_counter = 0
+        let mantissa_counter_value = 0
+
+        for (let i=63; i>11; i--)
+        {
+            if (this.bin_value[i] != '0')  {
+                matissa_counter += Math.pow(2, 63-i)
+                mantissa_counter_value += Math.pow(2, -i)
+            }
+        }
+
+        mantissa_counter_value = mantissa_counter_value.toFixed(100).replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1')
+
+        
+        this.mantissa_value.textContent =  (power_counter == 2047) ? "?" : (power_counter == 0) ? mantissa_counter_value : `1 + ${mantissa_counter_value}` 
+        this.actual_mantissa.value = `${matissa_counter}`
+    
+        
     }
 
 
@@ -285,7 +348,13 @@ function main(){
         'Error_Output',
         'Hex_Input_Output',
         'Exeption_Output',
-        container);
+        container,
+        'actual_sign',
+        'actual_exponent',
+        'actual_mantissa',
+        'sign_value',
+        'exponent_value',
+        'mantissa_value');
     
 }
 
