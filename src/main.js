@@ -300,6 +300,7 @@ class DoubleValue{
         if ( (this.decimal_value == '+nan') || (this.decimal_value == 'nan') || (this.decimal_value == '-nan') )
         {
             this.bin_value.fill('0')
+            this.bin_value[12] = '1'
             if (this.decimal_value == '-nan')
                 this.bin_value.fill('1', 0, 12)
             else
@@ -328,7 +329,8 @@ class DoubleValue{
     }
 
     count_error(){ // Вычисление ошибки
-        if (this.decimal_value == "NaN" || this.decimal_value == "inf" || this.decimal_value == "-NaN" || this.decimal_value == "-inf")
+        let dec_val = this.decimal_value.toLocaleLowerCase()
+        if (dec_val == "nan" || dec_val == "inf" || dec_val == "-nan" || dec_val == "-inf" || dec_val == "+nan")
             this.error_value = "unknown"
         else
             this.error_value = count_difference_stored_decimal(this.stored_value, this.decimal_value)
