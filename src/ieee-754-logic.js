@@ -18,13 +18,20 @@ window.convert_ieee754_to_stored = function(bitsStr) {
 
 
     const sign = bitsStr[0] === '1' ? -1 : 1;
-    const exponent = parseInt(bitsStr.slice(1, 12), 2) - 1023;
+    let exponent = parseInt(bitsStr.slice(1, 12), 2) - 1023;
     const mantissa = parseInt(bitsStr.slice(12), 2);
 
+    let significand = 0
 
-    const significand = exponent === -1023 
-        ? mantissa / Math.pow(2, 52)  
-        : 1 + mantissa / Math.pow(2, 52);  
+    if (exponent == -1023)
+    {
+        significand = mantissa / Math.pow(2, 52)
+        exponent = -1022
+    }
+    else
+    {
+        significand = 1+ mantissa / Math.pow(2, 52)
+    }
 
 
     let value = sign * significand * Math.pow(2, exponent);

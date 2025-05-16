@@ -99,6 +99,39 @@
 
 
     </div>
+
+    <p>This webpage is a tool to understand IEEE-754 floating point numbers. This is the format in which almost all CPUs represent non-integer numbers. As this format is using base-2,
+    there can be surprising differences in what numbers can be represented easily in decimal and which numbers can be represented in IEEE-754. As an example, try "0.1". The conversion is limited to 64-bit single precision numbers, while the
+    IEEE-754-Standard contains formats with increased precision.</p>
+    <ul>
+    <li>
+    <p><strong>Usage:</strong></p>
+    <p>You can either convert a number by choosing its binary representation in the button-bar, the other fields will be updated immediately. Or you can enter a binary number, a hexnumber or the decimal representation into the corresponding textfield and press return to update
+    the other fields. To make it easier to spot eventual rounding errors, the selected float number is displayed after conversion to double precision.</p>
+    </li>
+    <li>
+    <p><strong>Special Values:</strong></p>
+    <p>You can enter the words "Inf", "-Inf" or "NaN" to get the corresponding special values for IEEE-754. Please note there are two kinds of zero: +0 and -0.</p>
+    </li>
+    <li>
+    <p><strong>Conversion:</strong></p>
+    <p>The value of a IEEE-754 number is computed as:</p>
+    <p><span style="font-family:monospace;">sign <strong> 2<sup>exponent</sup> </strong> mantissa</span></p>
+    <p>The sign is stored in bit 64. The exponent can be computed from bits 52-63 by subtracting 1023. The mantissa (also known as significand or fraction) is stored in bits 1-52.
+    An invisible leading bit (i.e. it is not actually stored) with value 1.0 is placed in front, then bit 52 has a value of 1/2, bit 51 has value 1/4 etc. As a result, the mantissa
+    has a value between 1.0 and 2. If the exponent reaches -1023 (binary 00000000000), the leading 1 is no longer used to enable gradual underflow.</p>
+    </li>
+    <li>
+    <p><strong>Underflow:</strong></p>
+    <p>If the exponent has minimum value (all zero), special rules for denormalized values are followed. The exponent value is set to 2<sup>-1022</sup> and the "invisible" leading bit for the mantissa is no longer used.</p>
+    <p>The range of the mantissa is now [0:1).</p>
+    </p>
+    </li>
+    <li>
+    <p><strong>Rounding errors:</strong></p>
+    <p>Not every decimal number can be expressed exactly as a floating point number. This can be seen when entering "0.1" and examining its binary representation which is either slightly smaller or larger, depending on the last bit.</p>
+    </li>
+    <li>
     
 
     <script src="parser.js"></script>

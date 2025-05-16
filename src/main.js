@@ -330,7 +330,7 @@ class DoubleValue{
 
     count_error(){ // Вычисление ошибки
         let dec_val = this.decimal_value.toLocaleLowerCase()
-        if (dec_val == "nan" || dec_val == "inf" || dec_val == "-nan" || dec_val == "-inf" || dec_val == "+nan")
+        if (dec_val == "nan" || dec_val == "inf" || dec_val == "-nan" || dec_val == "-inf" || dec_val == "+nan" || this.stored_value == 'Infinity')
             this.error_value = "unknown"
         else
             this.error_value = count_difference_stored_decimal(this.stored_value, this.decimal_value)
