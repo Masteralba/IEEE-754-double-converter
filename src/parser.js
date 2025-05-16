@@ -35,7 +35,8 @@ window.parse_decimal = function(input){
 
     if ( !/^[-+]?(\d+\.?\d*|\.\d+)$/.test(input))
     {
-        throw new Error("Invalid character");
+        if (/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)$/.test(input)){}
+        else throw new Error("Invalid character");
     }
 
     return true
@@ -56,3 +57,56 @@ window.parse_hex = function(input){
 
     return true
 }
+
+
+window.expToDecimal = function(expNumStr) {
+    
+    const [mantissaStr, exponentStr] = expNumStr.toLowerCase().split('e');
+
+    let exponent = parseInt(exponentStr);
+    let [integerPart, fractionalPart = ''] = mantissaStr.split('.');
+    
+    
+    let digits = integerPart + fractionalPart;
+    let pointPos = integerPart.length; 
+
+    
+    if (exponent > 0) {
+        pointPos += exponent;
+        
+        if (digits.length < pointPos) {
+            digits += '0'.repeat(pointPos - digits.length);
+        }
+    } 
+    
+    else if (exponent < 0) {
+        pointPos += exponent; 
+        
+        if (pointPos < 0) {
+            digits = '0'.repeat(-pointPos) + digits;
+            pointPos = 0;
+        }
+    }
+
+    
+    let result = '';
+    for (let i = 0; i < digits.length; i++) {
+        if (i === pointPos && i !== digits.length) {
+            result += '.';
+        }
+        result += digits[i];
+    }
+
+    
+    if (result.endsWith('.')) {
+        result = result.slice(0, -1);
+    }
+    
+    if (result.startsWith('.')) {
+        result = '0' + result;
+    }
+
+    return result;
+}
+
+

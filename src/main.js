@@ -217,6 +217,11 @@ class DoubleValue{
             return // выход
         }
 
+        if (inputValue.toLowerCase().indexOf('e') != -1)
+        {
+            inputValue = expToDecimal(inputValue.toLowerCase())
+        }
+
         this.decimal_value = inputValue.toLowerCase()  // Обновляем значение
 
         // Пересчет остальных значений

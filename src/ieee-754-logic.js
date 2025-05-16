@@ -1,5 +1,6 @@
 
-window.convert_decimal_to_ieee754 = function(decimal_value){
+window.convert_decimal_to_ieee754 = function(decimal_value)
+{
     let bits = new Array(64).fill(0);
     if(decimal_value == 0) {
         return bits;
@@ -52,6 +53,7 @@ window.convert_decimal_to_ieee754 = function(decimal_value){
         bits[e] = bi[i];
         e -= 1;
     }
+    alert(bits.every(element => typeof element === 'string'))
     return bits;
 }
 
