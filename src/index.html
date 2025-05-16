@@ -117,7 +117,7 @@
     <p><strong>Conversion:</strong></p>
     <p>The value of a IEEE-754 number is computed as:</p>
     <p><span style="font-family:monospace;">sign <strong> 2<sup>exponent</sup> </strong> mantissa</span></p>
-    <p>The sign is stored in bit 64. The exponent can be computed from bits 52-63 by subtracting 1023. The mantissa (also known as significand or fraction) is stored in bits 1-52.
+    <p>The sign is stored in bit 64. The exponent can be computed from bits 53-63 by subtracting 1023. The mantissa (also known as significand or fraction) is stored in bits 1-52.
     An invisible leading bit (i.e. it is not actually stored) with value 1.0 is placed in front, then bit 52 has a value of 1/2, bit 51 has value 1/4 etc. As a result, the mantissa
     has a value between 1.0 and 2. If the exponent reaches -1023 (binary 00000000000), the leading 1 is no longer used to enable gradual underflow.</p>
     </li>
