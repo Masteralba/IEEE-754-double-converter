@@ -103,9 +103,15 @@ class DoubleValue{
             this.bits_container.querySelectorAll('.bit-checkbox')[i].checked = Boolean(parseFloat(this.bin_value[i]))
         }
 
-        this.decimal_input_output.value = this.decimal_value.replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1')
-        this.stored_output.value = this.stored_value.toString()
-        this.error_output.value = this.error_value.toString().replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1')
+        if (String(this.decimal_value).length >= 60 ) this.decimal_input_output.value = decimalToExponential(String(this.decimal_value))
+        else this.decimal_input_output.value = this.decimal_value.replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1')
+
+        if (String(this.stored_value).length >= 60 ) this.stored_output.value = decimalToExponential(String(this.stored_value))
+            else this.stored_output.value = this.stored_value.replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1')
+
+        if (String(this.error_value).length >= 60 ) this.error_output.value = decimalToExponential(String(this.error_value))
+            else this.error_output.value = this.error_value.replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1')
+        
 
         let hex_string = this.hex_value.slice(0, 16)
 
@@ -149,7 +155,7 @@ class DoubleValue{
         {
             if (this.bin_value[i] != '0')  {
                 matissa_counter += Math.pow(2, 63-i)
-                mantissa_counter_value += Math.pow(2, -i)
+                mantissa_counter_value += Math.pow(2, -(i-11))
             }
         }
 
@@ -207,7 +213,7 @@ class DoubleValue{
     
     input_decimal(){ // Введено новое десятичное значение
 
-        const inputValue = this.decimal_input_output.value
+        let inputValue = this.decimal_input_output.value
 
         
         try { // парсим
@@ -215,6 +221,11 @@ class DoubleValue{
         } catch (error) {
             this.exeption_output.value = error.message
             return // выход
+        }
+
+        if (inputValue.toLowerCase().indexOf('e') != -1)
+        {
+            inputValue = expToDecimal(inputValue)
         }
 
         this.decimal_value = inputValue.toLowerCase()  // Обновляем значение
@@ -266,24 +277,18 @@ class DoubleValue{
 
     bin_to_stored(){  // Перевод двоичного представлениия в представление в памяти
         if (this.bin_value.slice(1, 12).every(element => element === '1'))
-            this.stored_value = "not represented"
+            {
+                if (this.bin_value.slice(12, 65).every(element => element == '0'))
+                    this.stored_value = "inf"
+                else
+                    this.stored_value = "NaN"
+                if (this.bin_value[0] == 1)
+                    this.stored_value = "-" + this.stored_value
+            }
+        else
             this.stored_value = convert_ieee754_to_stored(this.bin_value.join(""))
     }
 
-    bin_to_decimal(){  // Перевод двоичного представления в десятичное
-
-        if (this.bin_value.slice(1, 12).every(element => element === '1'))
-        {
-            if (this.bin_value.slice(12, 65).every(element => element == '0'))
-                this.decimal_value = "inf"
-            else
-                this.decimal_value = "NaN"
-            if (this.bin_value[0] == 1)
-                this.decimal_value = "-" + this.decimal_value
-        }
-        else
-            this.decimal_value = convert_ieee754_to_decimal(this.bin_value)
-    }
 
     bin_to_hex(){  // Перевод двоичного представления в шестнадцатеричное
         this.hex_value = convert_ieee754_to_hex(this.bin_value)
@@ -295,6 +300,7 @@ class DoubleValue{
         if ( (this.decimal_value == '+nan') || (this.decimal_value == 'nan') || (this.decimal_value == '-nan') )
         {
             this.bin_value.fill('0')
+            this.bin_value[12] = '1'
             if (this.decimal_value == '-nan')
                 this.bin_value.fill('1', 0, 12)
             else
@@ -323,7 +329,8 @@ class DoubleValue{
     }
 
     count_error(){ // Вычисление ошибки
-        if (this.decimal_value == "NaN" || this.decimal_value == "inf" || this.decimal_value == "-NaN" || this.decimal_value == "-inf")
+        let dec_val = this.decimal_value.toLocaleLowerCase()
+        if (dec_val == "nan" || dec_val == "inf" || dec_val == "-nan" || dec_val == "-inf" || dec_val == "+nan" || this.stored_value == 'Infinity')
             this.error_value = "unknown"
         else
             this.error_value = count_difference_stored_decimal(this.stored_value, this.decimal_value)
