@@ -155,7 +155,7 @@ class DoubleValue{
         {
             if (this.bin_value[i] != '0')  {
                 matissa_counter += Math.pow(2, 63-i)
-                mantissa_counter_value += Math.pow(2, -i)
+                mantissa_counter_value += Math.pow(2, -(i-11))
             }
         }
 
