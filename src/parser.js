@@ -35,7 +35,7 @@ window.parse_decimal = function(input){
 
     if ( !/^[-+]?(\d+\.?\d*|\.\d+)$/.test(input))
     {
-        if (/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)$/.test(input)){}
+        if (/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)$/.test(input)){return true}
         else throw new Error("Invalid character");
     }
 
@@ -59,7 +59,9 @@ window.parse_hex = function(input){
 }
 
 
-window.expToDecimal = function(expNumStr) {
+window.expToDecimal = function(expNumStrinput) {
+
+    expNumStr = expNumStrinput.toLowerCase()
     
     const [mantissaStr, exponentStr] = expNumStr.toLowerCase().split('e');
 
@@ -110,3 +112,55 @@ window.expToDecimal = function(expNumStr) {
 }
 
 
+window.decimalToExponential = function(decimalStr) {
+    // Удаляем ведущие нули перед числом (если есть) и знак
+    let [sign, num] = decimalStr.match(/^([+-]?)(.*)/).slice(1);
+    num = num.replace(/^0+/, '');
+    
+    // Если число начинается с точки, добавляем ноль (".123" -> "0.123")
+    if (num.startsWith('.')) {
+        num = '0' + num;
+    }
+    
+    // Находим позицию первой значащей цифры (не нуля и не точка)
+    const firstDigitIndex = num.search(/[1-9]/);
+    
+    // Если все нули (включая случай "0.000...0")
+    if (firstDigitIndex === -1) {
+        return '0';
+    }
+    
+    // Находим позицию точки
+    const dotIndex = num.indexOf('.');
+    
+    let exponent;
+    let mantissa;
+    
+    if (dotIndex === -1) {
+        // Если точки нет (целое число), экспонента = длина числа - 1
+        exponent = num.length - 1;
+        mantissa = num[0] + (num.length > 1 ? '.' + num.slice(1) : '');
+    } else {
+        if (firstDigitIndex < dotIndex) {
+            // Случай типа "123.456" -> "1.23456e2"
+            exponent = dotIndex - 1;
+            mantissa = num[firstDigitIndex] + '.' + 
+                      num.slice(firstDigitIndex + 1).replace('.', '');
+        } else {
+            // Случай типа "0.000123" -> "1.23e-4"
+            exponent = firstDigitIndex - dotIndex - 1;
+            mantissa = num[firstDigitIndex] + '.' + 
+                      num.slice(firstDigitIndex + 1).replace('.', '');
+            exponent = -exponent;
+        }
+    }
+    
+    // Удаляем лишние нули в конце мантиссы
+    mantissa = mantissa.replace(/\.?0+$/, '');
+    if (mantissa.endsWith('.')) {
+        mantissa = mantissa.slice(0, -1);
+    }
+    
+    // Формируем результат
+    return sign + mantissa + (exponent !== 0 ? 'e' + exponent : '');
+}

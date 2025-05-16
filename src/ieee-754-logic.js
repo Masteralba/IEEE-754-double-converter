@@ -1,79 +1,18 @@
 
-window.convert_decimal_to_ieee754 = function(decimal_value)
-{
-    let bits = new Array(64).fill(0);
-    if(decimal_value == 0) {
-        return bits;
-    }
-    bits[0] = decimal_value > 0 ? 0 : 1; //начальный бит
-    
-    let abs = Math.abs(decimal_value);
-    let a = Math.floor(abs); //целая часть
-    let b = abs - a;         //дробь
-    let m = 12;
-    let l = 0;
-    let f = false;
-    if (a > 0) {
-        f = true;
-        let tmp = a.toString(2);
-        l = tmp.length;
-        for (let i = 1; i < l; i++) {
-            bits[m] = tmp[i];
-            m += 1;
+window.convert_decimal_to_ieee754 = function(decimal_value) {
+    var buffer = new ArrayBuffer(8);
+    var view = new DataView(buffer);
+    view.setFloat64(0, decimal_value);
+    var bits = [];
+    for (var i = 0; i < 8; i++) {
+        var byte = view.getUint8(i);
+        for (var j = 7; j >= 0; j--) {
+            bits.push((byte >> j) & 1);
         }
     }
-    let skip = 0;
-    while(m < 64) {
-        b *= 2;
-        let t = Math.floor(b);
-        b -= t;
-        if (!f && t == 0) {
-            skip += 1;
-            continue;
-        }
-        if (!f && t == 1) {
-            f = 1;
-            continue;
-        }
-        bits[m] = t;
-        m += 1;
-    }
-    let shift = 0;
-    if (l > 0) {
-        shift = l - 1;
-    }
-    else {
-        shift = - (skip + 1);
-    }
-    shift += 1023;
-    let bi = shift.toString(2);
-    let e = 11;
-    for (let i = bi.length-1; i >= 0; i--) {
-        
-        bits[e] = bi[i];
-        e -= 1;
-    }
-    alert(bits.every(element => typeof element === 'string'))
     return bits;
-}
+};
 
-window.convert_ieee754_to_decimal = function(ieee754){
-    let e = 0;
-    let m = 1;
-    for (let i = 11; i > 0; i--) {
-        e += ieee754[i]*2**(11-i);
-    }
-    if (e === -1023) {
-        m = 0;
-    }
-    
-    for (let i = 0; i < 52; i++){
-        m += ieee754[12+i]*2**(-i-1);
-    }
-    
-    e -= 1023;
-    return numberToString(ieee754[0] == 0 ? m*2**e : (-1)*m*2**e);
-}
 
 window.convert_ieee754_to_stored = function(bitsStr) {
 
@@ -83,17 +22,17 @@ window.convert_ieee754_to_stored = function(bitsStr) {
     const mantissa = parseInt(bitsStr.slice(12), 2);
 
 
-    if (exponent === 1024) {
-        return mantissa === 0 ? (sign === 1 ? "Infinity" : "-Infinity") : "NaN";
-    }
-
-
     const significand = exponent === -1023 
         ? mantissa / Math.pow(2, 52)  
         : 1 + mantissa / Math.pow(2, 52);  
 
 
-    const value = sign * significand * Math.pow(2, exponent);
+    let value = sign * significand * Math.pow(2, exponent);
+
+    if (String(value).indexOf('e') != -1)
+    {
+        return expToDecimal(value.toPrecision(100))
+    }
 
     const formatted = value.toFixed(100);
     
@@ -228,10 +167,12 @@ function is_greater(a, b){
         if (a[i] > b[i]) {
             return true;
         }
+		if (b[i] > a[i]) {
+            return false;
+        }
     }
     return false;
 }
-
 function numberToString(num) {
     // Проверка на NaN, Infinity и другие нечисловые значения
     if (!isFinite(num)) return String(num);
