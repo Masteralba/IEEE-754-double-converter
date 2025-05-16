@@ -103,9 +103,9 @@ class DoubleValue{
             this.bits_container.querySelectorAll('.bit-checkbox')[i].checked = Boolean(parseFloat(this.bin_value[i]))
         }
 
-        this.decimal_input_output.value = this.decimal_value.toString()
+        this.decimal_input_output.value = this.decimal_value.replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1')
         this.stored_output.value = this.stored_value.toString()
-        this.error_output.value = this.error_value.toString()
+        this.error_output.value = this.error_value.toString().replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1')
 
         let hex_string = this.hex_value.slice(0, 16)
 
@@ -179,11 +179,10 @@ class DoubleValue{
         this.bin_value = Array.from(inputValue); // Обновляем значение
 
         // Пересчет остальных значений
-        this.bin_to_decimal()
+        this.decimal_value = "not represented"
         this.bin_to_stored()
         this.bin_to_hex()
-        this.count_error()
-
+        this.error_value = '0'
         this.output()
 
         
@@ -194,14 +193,12 @@ class DoubleValue{
         if (event.target.classList.contains('bit-checkbox')) {
             const bitIndex = event.target.id.split('-')[1]; // Получаем номер бита из id
 
-            //bits_copy = this.bin_value.slice()  // Создаем копию текущего массива бит
 
             this.bin_value[bitIndex] = `${Number(event.target.checked)}`;
-
-            this.bin_to_decimal()
+            this.decimal_value = "not represented"
             this.bin_to_stored()
             this.bin_to_hex()
-            this.count_error()
+            this.error_value = '0'
             this.output()
 
         }
@@ -260,10 +257,9 @@ class DoubleValue{
         // Пересчет остальных значений
 
         this.hex_to_bin()
-        this.bin_to_decimal()
+        this.decimal_value = "not represented"
         this.bin_to_stored()
-        this.count_error()
-
+        this.error_value = '0'
         this.output()
 
     }
