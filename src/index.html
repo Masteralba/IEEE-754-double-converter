@@ -72,17 +72,34 @@
         </tr>
         <tr>
             <td>
-            <p>Значение в десятичной системе:<input type="text" id="Decimal_Input_Output" size="100"></p>
+            <p>Значение в десятичной системе:<input type="text" id="Decimal_Input_Output" size="140"></p>
             </td>
         </tr>
         <tr>
             <td>
-            <p>Значение в памяти:<input id="Stored_Output" readonly size="100"></p>
+            <p>Значение в памяти:<input id="Stored_Output"  size="140"></p>
             </td>
         </tr>
         <tr>
             <td>
-                <p>Ошибка представления:<input id="Error_Output" readonly size="100"></p>
+                <p>Ошибка представления:<input id="Error_Output"  size="140"></p>
+<script>
+  document.getElementById('Error_Output').addEventListener('keydown', function(e) {
+    // Разрешаем только стрелки (← →))
+    const allowedKeys = ['ArrowLeft', 'ArrowRight'];
+    
+    if (!allowedKeys.includes(e.key)) {
+      e.preventDefault(); // Блокируем все остальные клавиши
+    }
+  });
+    document.getElementById('Stored_Output').addEventListener('keydown', function(e) {
+    const allowedKeys = ['ArrowLeft', 'ArrowRight'];
+    
+    if (!allowedKeys.includes(e.key)) {
+      e.preventDefault(); // Блокируем все остальные клавиши
+    }
+  });
+</script>
             </td>
         </tr>
         <tr>
@@ -132,9 +149,10 @@
     <p>Not every decimal number can be expressed exactly as a floating point number. This can be seen when entering "0.1" and examining its binary representation which is either slightly smaller or larger, depending on the last bit.</p>
     </li>
     
-
+    
     <script src="parser.js"></script>
     <script src="ieee-754-logic.js"></script>
+    <script src="symbol-logic.js"></script>
     <script src="main.js"></script>
 
 </body>

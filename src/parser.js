@@ -1,8 +1,3 @@
-
-//  Логика работы функций парсеров пока непонятна
-
-
-
 window.parse_bin = function(input){
     // На вход подается строка. Проверить, что состоит только из 0 и 1
     // Проверить, что длинна ровно 64
@@ -35,7 +30,16 @@ window.parse_decimal = function(input){
 
     if ( !/^[-+]?(\d+\.?\d*|\.\d+)$/.test(input))
     {
-        if (/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)$/.test(input)){return true}
+        if (/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)$/.test(input))
+        {
+             // Разбиваем строку по 'e', 'E', 'e+', 'e-', 'E+', 'E-'
+            const parts = input.split(/[eE][+-]?/);
+  
+             // Проверяем длину экспоненты
+             if (parts[1].length < 7) return true
+             else throw new Error("Number is extreamly long")
+                 
+        }
         else throw new Error("Invalid character");
     }
 

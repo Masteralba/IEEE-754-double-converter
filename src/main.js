@@ -1,5 +1,3 @@
-
-
 class DoubleValue{
 
     constructor(
@@ -145,6 +143,7 @@ class DoubleValue{
             if (this.bin_value[i] != '0')  power_counter += Math.pow(2, 11-i)
         }
 
+        
         this.exponent_value.textContent = (power_counter == 2047) ? "?" : `${power_counter-1023}`
         this.actual_exponent.value = `${power_counter}`
 
@@ -159,10 +158,32 @@ class DoubleValue{
             }
         }
 
-        mantissa_counter_value = mantissa_counter_value.toFixed(100).replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1')
+        if (power_counter == 0  && matissa_counter != 0)
+        {
+            this.exponent_value.textContent = "-1022"
+        }
 
-        
-        this.mantissa_value.textContent =  (power_counter == 2047) ? "?" : (power_counter == 0) ? mantissa_counter_value : `1 + ${mantissa_counter_value}` 
+    const mantissa = this.bin_value.slice(12)
+
+	
+
+
+
+    let res = '0'
+
+    for (let i =0; i< 52; i++)
+    {
+        if (Boolean(parseInt(mantissa[i])))
+        {
+		res = addStringNumbers(res, two_pows[1023+i+1])
+        }
+    }
+	
+
+
+        if (power_counter != 0) res = '1 + ' + res
+        if (power_counter == 2047) res = "?"
+        this.mantissa_value.textContent =  res
         this.actual_mantissa.value = `${matissa_counter}`
     
         
@@ -185,10 +206,11 @@ class DoubleValue{
         this.bin_value = Array.from(inputValue); // Обновляем значение
 
         // Пересчет остальных значений
-        this.decimal_value = "not represented"
         this.bin_to_stored()
+	this.decimal_value = this.stored_value
         this.bin_to_hex()
         this.error_value = '0'
+	if (this.stored_value == "NaN" || this.stored_value == 'inf' || this.stored_value == '-inf' ) this.error_value = "unknown"
         this.output()
 
         
@@ -201,10 +223,11 @@ class DoubleValue{
 
 
             this.bin_value[bitIndex] = `${Number(event.target.checked)}`;
-            this.decimal_value = "not represented"
             this.bin_to_stored()
+	    this.decimal_value = this.stored_value
             this.bin_to_hex()
             this.error_value = '0'
+	    if (this.stored_value == "NaN" || this.stored_value == 'inf' || this.stored_value == '-inf' ) this.error_value = "unknown"
             this.output()
 
         }
@@ -268,8 +291,8 @@ class DoubleValue{
         // Пересчет остальных значений
 
         this.hex_to_bin()
-        this.decimal_value = "not represented"
         this.bin_to_stored()
+	this.decimal_value = this.stored_value
         this.error_value = '0'
         this.output()
 
@@ -282,11 +305,19 @@ class DoubleValue{
                     this.stored_value = "inf"
                 else
                     this.stored_value = "NaN"
-                if (this.bin_value[0] == 1)
+                if (this.bin_value[0] == 1 && this.stored_value != "NaN")
                     this.stored_value = "-" + this.stored_value
+             
             }
         else
-            this.stored_value = convert_ieee754_to_stored(this.bin_value.join(""))
+	    {
+		if (this.bin_value.slice(1, 65).every(element => element =='0'))
+		{
+			if (this.bin_value[0] == '0') this.stored_value = '+0'
+			else this.stored_value = '-0'
+		}
+            	else this.stored_value = convert_ieee754_to_stored(this.bin_value.join(""))
+	    }
     }
 
 
@@ -301,10 +332,7 @@ class DoubleValue{
         {
             this.bin_value.fill('0')
             this.bin_value[12] = '1'
-            if (this.decimal_value == '-nan')
-                this.bin_value.fill('1', 0, 12)
-            else
-                this.bin_value.fill('1', 1, 12)
+	    this.bin_value.fill('1', 1, 12)
         }
         else
         {
@@ -329,11 +357,15 @@ class DoubleValue{
     }
 
     count_error(){ // Вычисление ошибки
-        let dec_val = this.decimal_value.toLocaleLowerCase()
-        if (dec_val == "nan" || dec_val == "inf" || dec_val == "-nan" || dec_val == "-inf" || dec_val == "+nan" || this.stored_value == 'Infinity')
+        let dec_val = this.stored_value.toLocaleLowerCase()
+        if (dec_val == "nan" || dec_val == "inf" || dec_val == "-nan" || dec_val == "-inf" || dec_val == "+nan" || this.stored_value == 'Infinity' || dec_val == '+inf')
             this.error_value = "unknown"
         else
-            this.error_value = count_difference_stored_decimal(this.stored_value, this.decimal_value)
+	{
+		if (this.stored_value == '+0' || this.stored_value == '-0') this.error_value = '0'
+		else this.error_value = count_difference_stored_decimal(this.stored_value, this.decimal_value)
+	}
+            
     }
 
 
@@ -360,4 +392,3 @@ function main(){
         'mantissa_value');
     
 }
-

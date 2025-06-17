@@ -1,4 +1,3 @@
-
 window.convert_decimal_to_ieee754 = function(decimal_value) {
     var buffer = new ArrayBuffer(8);
     var view = new DataView(buffer);
@@ -7,7 +6,7 @@ window.convert_decimal_to_ieee754 = function(decimal_value) {
     for (var i = 0; i < 8; i++) {
         var byte = view.getUint8(i);
         for (var j = 7; j >= 0; j--) {
-            bits.push((byte >> j) & 1);
+            bits.push(String((byte >> j) & 1));
         }
     }
     return bits;
@@ -16,34 +15,52 @@ window.convert_decimal_to_ieee754 = function(decimal_value) {
 
 window.convert_ieee754_to_stored = function(bitsStr) {
 
-
     const sign = bitsStr[0] === '1' ? -1 : 1;
     let exponent = parseInt(bitsStr.slice(1, 12), 2) - 1023;
-    const mantissa = parseInt(bitsStr.slice(12), 2);
+    const mantissa = bitsStr.slice(12)
 
-    let significand = 0
 
-    if (exponent == -1023)
-    {
-        significand = mantissa / Math.pow(2, 52)
+
+    let res = ''
+    if (exponent == -1023){
         exponent = -1022
-    }
-    else
+    }else
     {
-        significand = 1+ mantissa / Math.pow(2, 52)
+        if (exponent <0)
+        {
+            
+            res = addStringNumbers(res, two_pows[1023 + (-exponent)])    
+        }
+        else
+        {
+            res = addStringNumbers(res, two_pows[1023-exponent])
+        }
     }
 
 
-    let value = sign * significand * Math.pow(2, exponent);
-
-    if (String(value).indexOf('e') != -1)
+    for (let i =0; i< 52; i++)
     {
-        return expToDecimal(value.toPrecision(100))
+        if (Boolean(parseInt(mantissa[i])))
+        {
+		
+            let local_two_pow = exponent - (i+1)
+
+            if (local_two_pow < 0)
+            {
+                res = addStringNumbers(res, two_pows[1023 + (-local_two_pow)])
+		
+            }
+            else
+            {
+                res = addStringNumbers(res, two_pows[1023-local_two_pow])
+            }
+
+        }
     }
 
-    const formatted = value.toFixed(100);
-    
-    return formatted.replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1');
+    if (bitsStr[0] == '1') res = '-' + res
+
+    return res
 }
 
 window.convert_ieee754_to_hex = function(bin_value){
@@ -64,16 +81,16 @@ window.convert_hex_to_ieee754 = function(hex_value){
         for (let j = 3; j >= 0; j--) {
             let t = Math.floor(val / 2);
             let r = val - t * 2;
-            bits[4*i+j] = r;
+            bits[4*i+j] = String(r);
             val = t;
         }
     }
+
     
     return bits;
 }
 
 window.count_difference_stored_decimal = function(stored_value, decimal_value){
-    //let num = numberToString(convert_ieee754_to_decimal(bin_value))
     return str_sub(decimal_value, stored_value);
 }
 
@@ -116,8 +133,12 @@ function str_normalizer(a, b) {
     const maxBackLen = Math.max(numA.back.length, numB.back.length);
 
     const normalize = (num) => {
-        const front = num.front.padStart(maxFrontLen, '0');
-        const back = num.back.padEnd(maxBackLen, '0');
+
+        let front = num.front
+        let back = num.back
+
+        for(let i=0; num.front < maxFrontlen; i++) num.front = '0' + num.front
+        for(let i=0; num.back < maxBacklen; i++) num.back = num.back + '0'
         return back ? `${front}.${back}` : front;
     };
 
@@ -130,8 +151,12 @@ function split_number(num) {
 }
 
 function normalize(num, maxFrontLen, maxBackLen) {
-    const paddedFront = num.front.padStart(maxFrontLen, '0');
-    const paddedBack = num.back.padEnd(maxBackLen, '0');
+    let paddedFront = num.front
+    let paddedBack = num.back
+
+    for (let i=0; paddedFront.length < maxFrontLen; i++) paddedFront = '0' + paddedFront
+    for (let i=0; paddedBack.length < maxBackLen; i++) paddedBack = paddedBack + '0' 
+
     return paddedBack ? `${paddedFront}.${paddedBack}` : paddedFront;
 }
 
